@@ -208,3 +208,25 @@ async def new_value_handler(message: Message, state: FSMContext) -> None:
     
     await message.answer(f"Значение '{message.text}' для '{data.get("value")}' успешно установлено", reply_markup=admin_kb())
     await state.clear()
+
+# Хэндлер поиска
+@rt.message(searchFilm.search)
+async def search_film_handler(message: Message, state: FSMContext) -> None:
+    settings = await app_state.settings_repo.get_all()
+
+    if not int(message.text):
+        await message.answer("Введите число!", reply_markup=main_kb())
+        return await state.clear()
+    
+    film = await app_state.film_repo.find_by_film_id(int(message.text))
+    if film == None:
+        return await message.answer(settings.not_found_code_message)
+    
+    message_build = f"🎬 {html.bold(film.video_name)}\n\n{film.text}"
+    starts_btn = film.pay_button
+
+    callback_data = f"buy_film|{int(message.text)}"
+    photo = FSInputFile(f"./bot/previews/{film.icon}")
+
+    await message.answer_photo(caption=message_build, reply_markup=buy_kb(starts_btn, f"buy_film|{int(message.text)}"), photo=photo)
+    return await state.clear()

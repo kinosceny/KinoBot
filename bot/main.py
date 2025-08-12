@@ -25,19 +25,17 @@ async def main() -> None:
     logger.info("Запуск бота..."); bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML)); logger.debug("Бот успешно запущен")
 
     logger.info("Загрузка роутеров..."); 
-    dp.include_routers(
-        user_commands.rt,
-        admin_commands.rt,
-        #invoice_handler.rt,
-        fsm_handler.rt,
-    )
+    dp.include_router(user_commands.rt)
+    dp.include_router(admin_commands.rt)
+    dp.include_router(invoice_handler.rt)
+    dp.include_router(fsm_handler.rt)
+
     logger.debug("Роутер [user_commands] загружен")
     logger.debug("Роутер [admin_commands] загружен")
     logger.debug("Роутер [fsm_handler] загружен")
     logger.debug("Роутер [invoice_handler] загружен")
 
-    await dp.start_polling(bot,
-                           allowed_updates=["message", "inline_query", "chat_member", "my_chat_member"])
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
     try:

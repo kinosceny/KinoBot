@@ -1,5 +1,3 @@
-import re
-
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandObject, Command
@@ -31,14 +29,6 @@ class createFilm(StatesGroup):
     cost_pay = State()
     pre_confirm = State()
     confirm = State()
-
-"""kb_list = [
-        [KeyboardButton(text="Приветсвие"), KeyboardButton(text="Кнопки")],
-        [KeyboardButton(text="Путь к миграциям"), KeyboardButton(text="Текст найденного фильма")],
-        [KeyboardButton(text="Остановить бота"), KeyboardButton(text="Сумма за фильм")],
-        [KeyboardButton(text="Создать новый фильм")],
-        [KeyboardButton(text="Все фильмы")]
-    ]"""
 
 # Админ панель
 @rt.message(F.text.startswith("⚙️ Админ панель"))

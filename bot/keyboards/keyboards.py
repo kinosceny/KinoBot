@@ -34,7 +34,6 @@ def editble_kb():
     return kb
 
 def buy_kb(button, cb_data: str):
-    logger.debug(cb_data)
     kb_list = [
         [InlineKeyboardButton(text=button, callback_data=cb_data)]
     ]

@@ -1,0 +1,5 @@
+aiogram==3.10.0
+loguru==0.7.2
+yoyo-migrations==9.0.0
+psycopg2==2.9.10
+asyncpg==0.30.0

@@ -71,7 +71,7 @@ class UserRepository:
         sql = f"""
             UPDATE "users"
             SET "{key}" = $1
-            WHERE "id" = $2
+            WHERE "telegram_id" = $2
             RETURNING 1
         """
         async with self._db.acquire() as c:

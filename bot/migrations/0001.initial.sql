@@ -15,9 +15,7 @@ create table films(
     "size" int not null,
     "text" text not null,
     "link" text not null,
-    "link_found" text not null,
-    "pay_button" text not null,
-    "cost_pay_button" int not null
+    "link_found" text not null
 );
 
 create table bot_settings(
@@ -26,8 +24,8 @@ create table bot_settings(
     "code_message" text not null default 'Введите код ниже',
     "after_link" text not null default 'Данный фильм также доступен Вам в разделе «⭐️ Мои фильмы»',
     "not_found_code_message" text not null default 'Не найдено',
+    "film_cost" int not null default 50,
     "is_working" bool not null default True
 );
 
-INSERT INTO bot_settings (start_message, code_message, after_link, not_found_code_message, is_working)
-    VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO bot_settings DEFAULT VALUES;

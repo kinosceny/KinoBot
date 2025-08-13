@@ -12,10 +12,12 @@ from bot.config import ADMINS
 from bot.state import app_state
 from bot.repository.films import Film
 from bot.handlers.admin_commands import NewValue, createFilm
-from bot.handlers.user_commands import searchFilm
 from bot.utils.func import list_all_files
 
 rt = Router()
+
+class searchFilm(StatesGroup):
+    search = State()
 
 # Отмена
 @rt.message(Command("cancel"))
@@ -133,33 +135,10 @@ async def link_found_film_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(link_found=str(message.text))
-    await message.answer("Принял значение. Введите текст в кнопке оплаты, например - 'Оплатить ⭐️ 50'")
-    await state.set_state(createFilm.pay_button)
-# pay_button (название кнопки) (str)
-@rt.message(createFilm.pay_button)
-async def pay_button_film_handler(message: Message, state: FSMContext) -> None:
-    if not str(message.text):
-        await message.answer("Название кнопки - это строка");
-        await state.clear()
-        return
-    
-    await state.update_data(pay_button=str(message.text))
-    await message.answer("Принял значение. Введите сумму звёзд за этот фильм:")
-    await state.set_state(createFilm.cost_pay)
-# cost_pay (кол-во звёзд) (int)
-@rt.message(createFilm.cost_pay)
-async def cost_pay_film_handler(message: Message, state: FSMContext) -> None:
-    if not int(message.text):
-        await message.answer("Название кнопки - это строка");
-        await state.clear()
-        return
-    
-    await state.update_data(cost_pay=int(message.text))
-    await message.answer("Принял значение. Проверьте все значения (1 - для продолжения):")
+    await message.answer("Принял значение. Проверьте все значения (1 - для продолжения): ")
     await state.set_state(createFilm.pre_confirm)
-# проверка всех значений и подтверждение
 @rt.message(createFilm.pre_confirm)
-async def cost_pay_film_handler(message: Message, state: FSMContext) -> None:
+async def preconfirm_film_handler(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     msg = f"""
 ID: {data.get("id")}
@@ -170,8 +149,6 @@ ID: {data.get("id")}
 Размер: {data.get("size")}
 Прямая ссылка: {data.get("link")}
 Ссылка на источник: {data.get("link_found")}
-Текст кнопки оплаты: {data.get("pay_button")}
-Стоимость фильма: {data.get("cost_pay")}
 
 Текст: 
 {data.get("text")}
@@ -194,9 +171,7 @@ async def confirm_film_handler(message: Message, state: FSMContext) -> None:
         size=data.get("size"),
         text=data.get("text"),
         link=data.get("link"),
-        link_found=data.get("link_found"),
-        pay_button=data.get("pay_button"),
-        cost_pay_button=data.get("cost_pay")
+        link_found=data.get("link_found")
     )
     f = await app_state.film_repo.create(film=film)
 
@@ -212,7 +187,10 @@ async def confirm_film_handler(message: Message, state: FSMContext) -> None:
 @rt.message(NewValue.value)
 async def new_value_handler(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
-    res = await app_state.settings_repo.update(data.get("value"), message.text)
+    if data.get("value") == "film_cost":
+        res = await app_state.settings_repo.update(data.get("value"), int(message.text))
+    else:
+        res = await app_state.settings_repo.update(data.get("value"), message.text)
 
     if res == None:
         await message.answer("Неверное значение", reply_markup=admin_kb()); await state.clear(); return
@@ -234,8 +212,6 @@ async def search_film_handler(message: Message, state: FSMContext) -> None:
         return await message.answer(settings.not_found_code_message)
     
     message_build = f"🎬 {html.bold(film.video_name)}\n\n{film.text}"
-    starts_btn = film.pay_button
     photo = FSInputFile(f"./bot/files/{film.icon}")
 
-    await message.answer_photo(caption=message_build, reply_markup=buy_kb(starts_btn, f"buy_film|{int(message.text)}"), photo=photo)
-    return await state.clear()
+    return await message.answer_photo(caption=message_build, reply_markup=buy_kb(f"Оплатить ⭐️ {settings.film_cost}", f"buy_film|{int(message.text)}"), photo=photo)

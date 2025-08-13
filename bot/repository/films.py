@@ -20,8 +20,6 @@ class Film(BaseModel):
     text: str
     link: str
     link_found: str
-    pay_button: str
-    cost_pay_button: int
 
 
 class FilmsRepository:

@@ -1,6 +1,8 @@
 from aiogram import Router, F, html
 from aiogram.types import Message, FSInputFile
 from aiogram.filters import CommandObject, CommandStart, Command
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
 
 from loguru import logger
 
@@ -8,8 +10,7 @@ from bot.filters.base import ChatTypeFilter
 from bot.keyboards.keyboards import main_kb, buy_kb
 from bot.state import app_state
 from bot.repository.user import User
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
+from bot.handlers.fsm_handler import search_film_handler
 
 rt = Router()
 
@@ -26,8 +27,8 @@ async def command_start_handler(message: Message, command: CommandObject) -> Non
         await app_state.user_repo.create(User(telegram_id=message.from_user.id, films=[]))
 
     if command.args:
-        film_number = int(command.args)
-        logger.debug(film_number)
+        fake_message = message.model_copy(update={'text': command.args})
+        return await search_film_handler(fake_message, searchFilm.search)
 
     await message.answer(text=settings.start_message, reply_markup=main_kb(message.from_user.id))
 

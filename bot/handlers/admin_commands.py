@@ -25,8 +25,6 @@ class createFilm(StatesGroup):
     text = State()
     link = State()
     link_found = State()
-    pay_button = State()
-    cost_pay = State()
     pre_confirm = State()
     confirm = State()
 
@@ -100,13 +98,14 @@ async def all_films(message: Message) -> None:
     if message.from_user.id not in ADMINS:
         return
     
+    settings = await app_state.settings_repo.get_all()
     films = await app_state.film_repo.get_all()
     if films == None:
         return await message.answer("Сейчас в базе данных отсутствуют фильмы", reply_markup=admin_kb())
     
     msg = "Список доступных фильмов:\n\n"
     for film in films:
-        msg += f"{film.film_id}. {film.film_name} ({film.cost_pay_button} ⭐️)\n"
+        msg += f"{film.film_id}. {film.film_name} ({settings.film_cost} ⭐️)\n"
 
     msg += "\nДля удаления используйте команду /delete_film id_фильма"
     return await message.answer(text=str(msg), reply_markup=admin_kb())
@@ -123,6 +122,16 @@ async def stop_bot(message: Message) -> None:
     elif settings.is_working == False:
         await app_state.settings_repo.update("is_working", True)
         return await message.answer("Теперь бот отвечает на кнопки для пользователей")
+    
+@rt.message(F.text.lower() == "изменить цену фильма")
+async def stop_bot(message: Message, state: FSMContext) -> None:
+    if message.from_user.id not in ADMINS:
+        return
+    
+    await message.answer("Введите новое значение для 'film_cost' (/cancel - для выхода):")
+
+    await state.set_data({"value": "film_cost"})
+    await state.set_state(NewValue.value)
 
 @rt.message(Command(commands="delete_film"))
 async def delete_film(message: Message, command: CommandObject) -> None:

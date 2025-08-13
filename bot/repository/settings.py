@@ -15,6 +15,7 @@ class Settings(BaseModel):
     code_message: str
     after_link: str
     not_found_code_message: str
+    film_cost: int
     is_working: bool
 
 

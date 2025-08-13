@@ -89,7 +89,7 @@ async def film_name_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(film_name=str(message.text))
-    await message.answer("Принял значение. Введите размер фильма:")
+    await message.answer("Принял значение. Введите размер фильма (в мегабайтах, только число):")
     await state.set_state(createFilm.size)
 # size (only int)
 @rt.message(createFilm.size)

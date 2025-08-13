@@ -99,4 +99,4 @@ async def myfilm(message: Message, command: CommandObject):
         f"{html.bold('Скачать:')} {html.link(f'💾 ({film.size} MB)', film.link)}\n\n"
         f"{html.bold('Где найти:')} {film.link_found}"
     )
-    await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True)
+    await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)

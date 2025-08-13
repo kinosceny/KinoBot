@@ -202,6 +202,7 @@ async def new_value_handler(message: Message, state: FSMContext) -> None:
 @rt.message(searchFilm.search)
 async def search_film_handler(message: Message, state: FSMContext) -> None:
     settings = await app_state.settings_repo.get_all()
+    user = await app_state.user_repo.get_by_telegram_id(message.from_user.id)
 
     if not int(message.text):
         await message.answer("Введите число!", reply_markup=main_kb())
@@ -210,6 +211,9 @@ async def search_film_handler(message: Message, state: FSMContext) -> None:
     film = await app_state.film_repo.find_by_film_id(int(message.text))
     if film == None:
         return await message.answer(settings.not_found_code_message)
+    
+    if film.film_id in user.films:
+        return await message.answer("Вы уже купили данный фильм!")
     
     message_build = f"🎬 {html.bold(film.video_name)}\n\n{film.text}"
     photo = FSInputFile(f"./bot/files/{film.icon}")

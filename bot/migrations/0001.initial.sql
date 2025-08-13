@@ -12,10 +12,10 @@ create table films(
     "icon" text not null,
     "video_name" text not null,
     "film_name" text not null,
-    "size" int not null,
     "text" text not null,
     "link" text not null,
-    "link_found" text not null
+    "link_found" text not null,
+    "link_text" text not null
 );
 
 create table bot_settings(

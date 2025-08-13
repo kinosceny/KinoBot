@@ -25,7 +25,7 @@ async def cancel_form(message: Message, state: FSMContext):
     await message.answer("Действие отменено")
 
 # Создание фильма
-# id
+
 @rt.message(createFilm.film_id)
 async def film_id_film_handler(message: Message, state: FSMContext) -> None:
     if not int(message.text):
@@ -34,33 +34,9 @@ async def film_id_film_handler(message: Message, state: FSMContext) -> None:
         return
 
     await state.update_data(id=int(message.text))
-    await message.answer(f"Введите название иконки с форматом файла:")
-    await state.set_state(createFilm.icon)
-# icon (1.png/jpg)
-@rt.message(createFilm.icon)
-async def icon_film_handler(message: Message, state: FSMContext) -> None:
-    if not str(message.text):
-        await message.answer("Название файла - это строка");
-        await state.clear()
-        return
-    
-    await state.update_data(icon=str(message.text))
-    await message.answer(f"Введите название файла фильма с форматом файла:")
-    await state.set_state(createFilm.path_to_video)
-
-# path_to_video
-@rt.message(createFilm.path_to_video)
-async def video_name_handler(message: Message, state: FSMContext) -> None:
-    if not str(message.text):
-        await message.answer("Название файла с расширением - это строка");
-        await state.clear()
-        return
-    
-    await state.update_data(path_to_video=str(message.text))
-    await message.answer("Введите название видео:")
+    await message.answer(f"Введите название видео:")
     await state.set_state(createFilm.video_name)
 
-# video_name (not film_name!)
 @rt.message(createFilm.video_name)
 async def video_name_handler(message: Message, state: FSMContext) -> None:
     if not str(message.text):
@@ -71,7 +47,7 @@ async def video_name_handler(message: Message, state: FSMContext) -> None:
     await state.update_data(video_name=str(message.text))
     await message.answer("Введите название фильма:")
     await state.set_state(createFilm.film_name)
-# film name (not video_name!)
+
 @rt.message(createFilm.film_name)
 async def film_name_handler(message: Message, state: FSMContext) -> None:
     if not str(message.text):
@@ -80,42 +56,9 @@ async def film_name_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(film_name=str(message.text))
-    await message.answer("Введите размер фильма (в мегабайтах, только число):")
-    await state.set_state(createFilm.size)
-# size (only int)
-@rt.message(createFilm.size)
-async def size_film_handler(message: Message, state: FSMContext) -> None:
-    if not int(message.text):
-        await message.answer("Вес фильма - это число");
-        await state.clear()
-        return
-    
-    await state.update_data(size=int(message.text))
-    await message.answer("Введите текст который увидет пользователь при покупке:")
-    await state.set_state(createFilm.text)
-# text (str)
-@rt.message(createFilm.text)
-async def text_film_handler(message: Message, state: FSMContext) -> None:
-    if not str(message.text):
-        await message.answer("Текст - это строка");
-        await state.clear()
-        return
-    
-    await state.update_data(text=str(message.text))
-    await message.answer("Введите ссылку торрента/онлайн кинотеатра:")
-    await state.set_state(createFilm.link)
-# link (прямая ссылка) (str)
-@rt.message(createFilm.link)
-async def link_film_handler(message: Message, state: FSMContext) -> None:
-    if not str(message.text):
-        await message.answer("Ссылка - это строка");
-        await state.clear()
-        return
-    
-    await state.update_data(link=str(message.text))
-    await message.answer("Введите ссылку на imdb/КиноПоиск ('-' если отстуствует):")
+    await message.answer("Ссылка на imdb/КиноПоиск:")
     await state.set_state(createFilm.link_found)
-# link_found (источник - ссылка) (str)
+
 @rt.message(createFilm.link_found)
 async def link_found_film_handler(message: Message, state: FSMContext) -> None:
     if not str(message.text):
@@ -124,20 +67,66 @@ async def link_found_film_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(link_found=str(message.text))
-    await message.answer("Проверьте все значения (1 - для продолжения):")
+    await message.answer("Название торрента/онлайн кинотеатра:")
+    await state.set_state(createFilm.link_text)
+
+@rt.message(createFilm.link_text)
+async def link_found_film_handler(message: Message, state: FSMContext) -> None:
+    if not str(message.text):
+        await message.answer("Текст ссылки - это строка");
+        await state.clear()
+        return
+    
+    await state.update_data(link_text=str(message.text))
+    await message.answer("Ссылка торрента/онлайн кинотеатра:")
+    await state.set_state(createFilm.link)
+
+@rt.message(createFilm.link)
+async def link_film_handler(message: Message, state: FSMContext) -> None:
+    if not str(message.text):
+        await message.answer("Ссылка - это строка");
+        await state.clear()
+        return
+    
+    await state.update_data(link=str(message.text))
+    await message.answer("Обложка (название файла с указанием расширения):")
+    await state.set_state(createFilm.icon)
+
+@rt.message(createFilm.icon)
+async def icon_film_handler(message: Message, state: FSMContext) -> None:
+    if not str(message.text):
+        await message.answer("Ссылка - это строка");
+        await state.clear()
+        return
+    
+    await state.update_data(icon=str(message.text))
+    await message.answer(f"Видео (название файла с указанием расширения):")
+    await state.set_state(createFilm.path_to_video)
+
+@rt.message(createFilm.path_to_video)
+async def video_name_handler(message: Message, state: FSMContext) -> None:
+    if not str(message.text):
+        await message.answer("Название файла с расширением - это строка");
+        await state.clear()
+        return
+    
+    await state.update_data(path_to_video=str(message.text))
+    await message.answer("Введите текст который видит пользователь при покупке:")
     await state.set_state(createFilm.pre_confirm)
+
 @rt.message(createFilm.pre_confirm)
 async def preconfirm_film_handler(message: Message, state: FSMContext) -> None:
+    await state.update_data(text=str(message.text))
     data = await state.get_data()
     msg = f"""
 Код – числовой: {data.get("id")}
 Название видео: {data.get("video_name")}
 Название фильма: {data.get("film_name")}
-Ссылка торрента/онлайн кинотеатра: {data.get("link")}
 Ссылка на imdb/КиноПоиск: {data.get("link_found")}
+Название торрента/онлайн кинотеатра: {data.get("link_text")}
+Ссылка торрента/онлайн кинотеатра: {data.get("link")}
 Обложка: {data.get("icon")}
 Видео: {data.get("path_to_video")}
-Размер: {data.get("size")}
 
 Текст: 
 {data.get("text")}
@@ -156,10 +145,10 @@ async def confirm_film_handler(message: Message, state: FSMContext) -> None:
         icon=data.get("icon"),
         video_name=data.get("video_name"),
         film_name=data.get("film_name"),
-        size=data.get("size"),
         text=data.get("text"),
         link=data.get("link"),
-        link_found=data.get("link_found")
+        link_found=data.get("link_found"),
+        link_text=data.get("link_text")
     )
     f = await app_state.film_repo.create(film=film)
 
@@ -205,8 +194,7 @@ async def search_film_handler(message: Message, state: FSMContext) -> None:
         msg = (
             f"🎬 {html.bold(film.video_name)}\n\n"
             f"{html.bold('Название:')} {html.link(f"{film.film_name}", film.link_found)}\n\n"
-            f"{html.bold('Скачать:')} {html.link(f'💾 ({film.size} MB)', film.link)}\n\n"
-            f"{html.bold('Где найти:')} {film.link_found}"
+            f"{html.bold('Где найти:')} {html.link(film.link_text, film.link)}"
         )
         return await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)
     

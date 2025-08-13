@@ -213,7 +213,14 @@ async def search_film_handler(message: Message, state: FSMContext) -> None:
         return await message.answer(settings.not_found_code_message)
     
     if film.film_id in user.films:
-        return await message.answer("Вы уже купили данный фильм!")
+        inputfile = FSInputFile(f"./bot/files/{film.path_to_video}")
+        msg = (
+            f"🎬 {html.bold(film.video_name)}\n\n"
+            f"{html.bold('Название:')} {html.link(f"{film.film_name}", film.link_found)}\n\n"
+            f"{html.bold('Скачать:')} {html.link(f'💾 ({film.size} MB)', film.link)}\n\n"
+            f"{html.bold('Где найти:')} {film.link_found}"
+        )
+        return await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)
     
     message_build = f"🎬 {html.bold(film.video_name)}\n\n{film.text}"
     photo = FSInputFile(f"./bot/files/{film.icon}")

@@ -36,8 +36,11 @@ async def successful_payment(message: Message):
 
     user = await app_state.user_repo.get_by_telegram_id(message.from_user.id)
     film = await app_state.film_repo.find_by_film_id(film_id=int(film_id))
-    val = user.films.append(film_id)
-    await app_state.user_repo.update_by_id(message.from_user.id, "films", val)
+    
+    new_films = user.films.copy()
+    new_films.append(film_id)
+
+    await app_state.user_repo.update_by_id(message.from_user.id, "films", new_films)
 
     for admin in ADMINS:
         text = f"💰 Новая покупка (telegramstars)\n\nПользователь @{message.from_user.username} (ID {message.from_user.id}) купил {film.video_name} за {film.cost_pay_button} XTR"

@@ -27,9 +27,9 @@ async def test_payment(callback_query: CallbackQuery):
 
 @rt.pre_checkout_query()
 async def pre_checkout(pre_checkout_query: PreCheckoutQuery):
-    await pre_checkout_query.answer(ok=True)  # Всегда подтверждаем
+    await pre_checkout_query.answer(ok=True)
 
-@rt.message(F.successfull_payment)
+@rt.message(F.successful_payment)
 async def successful_payment(message: Message):
     payload = message.successful_payment.invoice_payload
     _, film_id = payload.split("|")
@@ -38,8 +38,13 @@ async def successful_payment(message: Message):
     film = await app_state.film_repo.find_by_film_id(film_id=int(film_id))
     val = user.films.append(film_id)
     await app_state.user_repo.update_by_id(message.from_user.id, "films", val)
-
-    inputfile = FSInputFile(f"./bot/videos/{film.path_to_video}")
-    msg = f"🎬 {html.bold(film.video_name)}\n\n{html.bold("Название:")} {film.film_name}\n\n{html.bold("Скачать:")} [💾 ({film.size} MB)]({film.link})\n\n{html.bold("Где найти:")} {film.link_found}\n\n{film.text}" 
     
-    await message.reply_video(video=inputfile, caption=msg, parse_mode="MarkdownV2")
+    await message.answer("Подождите... Идёт загрузка вашего файла")
+    inputfile = FSInputFile(f"./bot/files/{film.path_to_video}")
+    msg = (
+        f"🎬 {html.bold(film.video_name)}\n\n"
+        f"{html.bold('Название:')} {film.film_name}\n\n"
+        f"{html.bold('Скачать:')} {html.link(f'💾 ({film.size} MB)', film.link)}\n\n"
+        f"{html.bold('Где найти:')} {film.link_found}"
+    )
+    await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True)

@@ -8,6 +8,7 @@ services:
       dockerfile: deploy/app/Dockerfile
     volumes:
       - "../bot:/app/bot"
+      - "/var/www/admin/data/www/tglibs.top/files:/app/bot/files"
     env_file:
       - .env
     restart: always
@@ -22,9 +23,13 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - "./conf/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf"
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - internal
+
+volumes:
+  postgres_data:
+    driver: local
 
 networks:
   internal:

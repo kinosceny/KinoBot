@@ -13,6 +13,7 @@ from bot.state import app_state
 from bot.repository.films import Film
 from bot.handlers.admin_commands import NewValue, createFilm
 from bot.handlers.user_commands import searchFilm
+from bot.utils.func import list_all_files
 
 rt = Router()
 
@@ -31,8 +32,13 @@ async def film_id_film_handler(message: Message, state: FSMContext) -> None:
         await state.clear()
         return
     
+    list = ""
+    files = list_all_files("./bot/files")
+    for file in files:
+        list += f"{file}\n"
+
     await state.update_data(id=int(message.text))
-    await message.answer("Принял значение. Введите название иконки с форматом файла:")
+    await message.answer(f"Принял значение. Введите название иконки с форматом файла:\n\nДоступные файлы:\n{list}")
     await state.set_state(createFilm.icon)
 # icon (1.png/jpg)
 @rt.message(createFilm.icon)
@@ -42,8 +48,13 @@ async def icon_film_handler(message: Message, state: FSMContext) -> None:
         await state.clear()
         return
     
+    list = ""
+    files = list_all_files("./bot/files")
+    for file in files:
+        list += f"{file}\n"
+    
     await state.update_data(icon=str(message.text))
-    await message.answer("Принял значение. Введите название файла фильма с расширением:")
+    await message.answer(f"Принял значение. Введите название файла фильма с расширением:\n\nДоступные файлы:\n{list}")
     await state.set_state(createFilm.path_to_video)
 
 # path_to_video
@@ -224,9 +235,7 @@ async def search_film_handler(message: Message, state: FSMContext) -> None:
     
     message_build = f"🎬 {html.bold(film.video_name)}\n\n{film.text}"
     starts_btn = film.pay_button
-
-    callback_data = f"buy_film|{int(message.text)}"
-    photo = FSInputFile(f"./bot/previews/{film.icon}")
+    photo = FSInputFile(f"./bot/files/{film.icon}")
 
     await message.answer_photo(caption=message_build, reply_markup=buy_kb(starts_btn, f"buy_film|{int(message.text)}"), photo=photo)
     return await state.clear()

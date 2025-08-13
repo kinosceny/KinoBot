@@ -55,7 +55,15 @@ async def user_films(message: Message) -> None:
     if not user.films:
         return await message.answer(text="У Вас пока нет оплаченных фильмов ☹")
     
-    ...
+    msg = "Все ваши фильмы:\n\n"
+    
+    for id in user.films:
+        film = await app_state.film_repo.find_by_film_id(int(id))
+        msg += f"{film.film_id}. {film.film_name}\n"
+
+    msg += "\nДля просмотра купленого фильма воспользуйтесь командой /myfilm id_фильма"
+    return await message.answer()
+        
 
 @rt.message(F.text == "🔎 Ввести код")
 async def code_handler(message: Message, state: FSMContext) -> None:

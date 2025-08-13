@@ -12,7 +12,6 @@ from bot.config import ADMINS
 from bot.state import app_state
 from bot.repository.films import Film
 from bot.handlers.admin_commands import NewValue, createFilm
-from bot.utils.func import list_all_files
 
 rt = Router()
 
@@ -33,14 +32,9 @@ async def film_id_film_handler(message: Message, state: FSMContext) -> None:
         await message.answer("id - число");
         await state.clear()
         return
-    
-    list = ""
-    files = list_all_files("./bot/files")
-    for file in files:
-        list += f"{file}\n"
 
     await state.update_data(id=int(message.text))
-    await message.answer(f"Принял значение. Введите название иконки с форматом файла:\n\nДоступные файлы:\n{list}")
+    await message.answer(f"Принял значение. Введите название иконки с форматом файла:")
     await state.set_state(createFilm.icon)
 # icon (1.png/jpg)
 @rt.message(createFilm.icon)
@@ -50,13 +44,8 @@ async def icon_film_handler(message: Message, state: FSMContext) -> None:
         await state.clear()
         return
     
-    list = ""
-    files = list_all_files("./bot/files")
-    for file in files:
-        list += f"{file}\n"
-    
     await state.update_data(icon=str(message.text))
-    await message.answer(f"Принял значение. Введите название файла фильма с расширением:\n\nДоступные файлы:\n{list}")
+    await message.answer(f"Принял значение. Введите название файла фильма с форматом файла:")
     await state.set_state(createFilm.path_to_video)
 
 # path_to_video

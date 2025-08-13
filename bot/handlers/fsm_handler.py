@@ -34,7 +34,7 @@ async def film_id_film_handler(message: Message, state: FSMContext) -> None:
         return
 
     await state.update_data(id=int(message.text))
-    await message.answer(f"Принял значение. Введите название иконки с форматом файла:")
+    await message.answer(f"Введите название иконки с форматом файла:")
     await state.set_state(createFilm.icon)
 # icon (1.png/jpg)
 @rt.message(createFilm.icon)
@@ -45,7 +45,7 @@ async def icon_film_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(icon=str(message.text))
-    await message.answer(f"Принял значение. Введите название файла фильма с форматом файла:")
+    await message.answer(f"Введите название файла фильма с форматом файла:")
     await state.set_state(createFilm.path_to_video)
 
 # path_to_video
@@ -57,7 +57,7 @@ async def video_name_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(path_to_video=str(message.text))
-    await message.answer("Принял значение. Введите название видео (не фильма!):")
+    await message.answer("Введите название видео:")
     await state.set_state(createFilm.video_name)
 
 # video_name (not film_name!)
@@ -69,7 +69,7 @@ async def video_name_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(video_name=str(message.text))
-    await message.answer("Принял значение. Введите название фильма (не видео!):")
+    await message.answer("Введите название фильма:")
     await state.set_state(createFilm.film_name)
 # film name (not video_name!)
 @rt.message(createFilm.film_name)
@@ -80,7 +80,7 @@ async def film_name_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(film_name=str(message.text))
-    await message.answer("Принял значение. Введите размер фильма (в мегабайтах, только число):")
+    await message.answer("Введите размер фильма (в мегабайтах, только число):")
     await state.set_state(createFilm.size)
 # size (only int)
 @rt.message(createFilm.size)
@@ -91,7 +91,7 @@ async def size_film_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(size=int(message.text))
-    await message.answer("Принял значение. Введите текст который увидет пользователь при покупке:")
+    await message.answer("Введите текст который увидет пользователь при покупке:")
     await state.set_state(createFilm.text)
 # text (str)
 @rt.message(createFilm.text)
@@ -102,7 +102,7 @@ async def text_film_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(text=str(message.text))
-    await message.answer("Принял значение. Введите прямую ссылку на скачивание:")
+    await message.answer("Введите ссылку торрента/онлайн кинотеатра:")
     await state.set_state(createFilm.link)
 # link (прямая ссылка) (str)
 @rt.message(createFilm.link)
@@ -113,7 +113,7 @@ async def link_film_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(link=str(message.text))
-    await message.answer("Принял значение. Введите ссылку на открытый источник ('-' если отстуствует):")
+    await message.answer("Введите ссылку на imdb/КиноПоиск ('-' если отстуствует):")
     await state.set_state(createFilm.link_found)
 # link_found (источник - ссылка) (str)
 @rt.message(createFilm.link_found)
@@ -124,24 +124,23 @@ async def link_found_film_handler(message: Message, state: FSMContext) -> None:
         return
     
     await state.update_data(link_found=str(message.text))
-    await message.answer("Принял значение. Проверьте все значения (1 - для продолжения): ")
+    await message.answer("Проверьте все значения (1 - для продолжения):")
     await state.set_state(createFilm.pre_confirm)
 @rt.message(createFilm.pre_confirm)
 async def preconfirm_film_handler(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     msg = f"""
-ID: {data.get("id")}
-Иконка: {data.get("icon")}
-Видео: {data.get("path_to_video")}
+Код – числовой: {data.get("id")}
 Название видео: {data.get("video_name")}
 Название фильма: {data.get("film_name")}
+Ссылка торрента/онлайн кинотеатра: {data.get("link")}
+Ссылка на imdb/КиноПоиск: {data.get("link_found")}
+Обложка: {data.get("icon")}
+Видео: {data.get("path_to_video")}
 Размер: {data.get("size")}
-Прямая ссылка: {data.get("link")}
-Ссылка на источник: {data.get("link_found")}
 
 Текст: 
 {data.get("text")}
-
 
 Для подтверждения напишите что-то, для выхода - /cancel
     """

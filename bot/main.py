@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from bot.handlers import user_commands, admin_commands, fsm_handler, invoice_handler
+from bot.handlers import user_commands, admin_commands, fsm_handler, invoice_handler, echo
 from bot.config import BOT_TOKEN
 from bot.state import app_state
 
@@ -29,11 +29,13 @@ async def main() -> None:
     dp.include_router(admin_commands.rt)
     dp.include_router(invoice_handler.rt)
     dp.include_router(fsm_handler.rt)
+    dp.include_router(echo.rt)
 
     logger.debug("Роутер [user_commands] загружен")
     logger.debug("Роутер [admin_commands] загружен")
     logger.debug("Роутер [fsm_handler] загружен")
     logger.debug("Роутер [invoice_handler] загружен")
+    logger.debug("Роутер [echo] загружен")
 
     await dp.start_polling(bot)
 

@@ -1,6 +1,6 @@
 from aiogram import Router, F, html
 from aiogram.types import Message, FSInputFile
-from aiogram.filters import CommandObject, CommandStart, Command
+from aiogram.filters import CommandObject, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
@@ -45,6 +45,7 @@ async def command_start_handler(message: Message, command: CommandObject) -> Non
 @rt.message(F.text == "⭐️ Мои фильмы")
 async def user_films(message: Message) -> None:
     settings = await app_state.settings_repo.get_all()
+    bot = await message.bot.get_me()
     if settings.is_working == False:
         return await message.answer("В данный момент не работаем, приходите позже")
 
@@ -55,19 +56,14 @@ async def user_films(message: Message) -> None:
     
     if not user.films:
         return await message.answer(text="У Вас пока нет оплаченных фильмов ☹")
-    
-    await message.answer("Вот список всех Ваших фильмов:")
 
     for id in user.films:
         film = await app_state.film_repo.find_by_film_id(id)
-        inputfile = FSInputFile(f"./bot/files/{film.path_to_video}")
+        inputfile = FSInputFile(f"./bot/files/{film.icon}")
         msg = (
-            f"🎬 {html.bold(film.video_name)}\n\n"
-            f"{html.bold('Название:')} {html.link(f"{film.film_name}", film.link_found)}\n\n"
-            f"{html.bold('Скачать:')} {html.link(f'💾 ({film.size} MB)', film.link)}\n\n"
-            f"{html.bold('Где найти:')} {film.link_found}"
+            f"🎬 {html.link(html.bold(film.video_name), f"t.me/{bot.username}?start={film.film_id}")}"
         )
-        await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)
+        await message.reply_photo(photo=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)
         
 
 @rt.message(F.text == "🔎 Ввести код")

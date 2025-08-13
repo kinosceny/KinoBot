@@ -4,7 +4,7 @@ from aiogram.types import Message, FSInputFile, LabeledPrice, SuccessfulPayment,
 from loguru import logger
 
 from bot.state import app_state
-
+from bot.config import ADMINS
 
 rt = Router()
 
@@ -38,7 +38,11 @@ async def successful_payment(message: Message):
     film = await app_state.film_repo.find_by_film_id(film_id=int(film_id))
     val = user.films.append(film_id)
     await app_state.user_repo.update_by_id(message.from_user.id, "films", val)
-    
+
+    for admin in ADMINS:
+        text = f"💰 Новая покупка (telegramstars)\n\nПользователь @{message.from_user.username} (ID {message.from_user.id}) купил {film.video_name} за {film.cost_pay_button} XTR"
+        await message.bot.send_message(chat_id=admin, text=text)
+
     await message.answer("Подождите... Идёт загрузка вашего файла")
     inputfile = FSInputFile(f"./bot/files/{film.path_to_video}")
     msg = (
@@ -47,4 +51,4 @@ async def successful_payment(message: Message):
         f"{html.bold('Скачать:')} {html.link(f'💾 ({film.size} MB)', film.link)}\n\n"
         f"{html.bold('Где найти:')} {film.link_found}"
     )
-    await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True)
+    await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)

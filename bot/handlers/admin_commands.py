@@ -17,14 +17,13 @@ class NewValue(StatesGroup):
 
 class createFilm(StatesGroup):
     film_id = State()
-    icon = State()
-    path_to_video = State()
     video_name = State()
     film_name = State()
-    size = State()
-    text = State()
-    link = State()
     link_found = State()
+    link_text = State()
+    link = State()
+    icon = State()
+    path_to_video = State()
     pre_confirm = State()
     confirm = State()
 

@@ -16,10 +16,10 @@ class Film(BaseModel):
     icon: str
     video_name: str
     film_name: str
-    size: int
     text: str
     link: str
     link_found: str
+    link_text: str
 
 
 class FilmsRepository:

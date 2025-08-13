@@ -53,7 +53,6 @@ async def successful_payment(message: Message):
     msg = (
         f"🎬 {html.bold(film.video_name)}\n\n"
         f"{html.bold('Название:')} {html.link(f"{film.film_name}", film.link_found)}\n\n"
-        f"{html.bold('Скачать:')} {html.link(f'💾 ({film.size} MB)', film.link)}\n\n"
-        f"{html.bold('Где найти:')} {film.link_found}"
+        f"{html.bold('Где найти:')} {html.link(film.link_text, film.link)}"
     )
     await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)

@@ -21,6 +21,8 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - "./conf/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf"
     networks:
       - internal
 

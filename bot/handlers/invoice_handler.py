@@ -56,4 +56,4 @@ async def successful_payment(message: Message):
         f"{html.bold('Где найти:')} {html.link(film.link_text, film.link)}\n\n"
         f"{settings.after_link}"
     )
-    await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)
+    await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True, supports_streaming=True)

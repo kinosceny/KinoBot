@@ -12,7 +12,7 @@ rt = Router()
 
 
 @rt.message(F.text,
-    lambda message: not message.text.startswith('/'))
+    lambda message: not message.text.startswith('/') and message.text.isdigit())
 async def code_handle(message: Message, state: FSMContext) -> None:
     user = await app_state.user_repo.get_by_telegram_id(message.from_user.id)
     settings = await app_state.settings_repo.get_all()

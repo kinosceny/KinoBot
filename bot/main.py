@@ -3,13 +3,17 @@ import bot.migrations_runner as migrations_runner
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
+from aiogram.client.telegram import TelegramAPIServer
 from aiogram.enums import ParseMode
 
 from bot.handlers import user_commands, admin_commands, fsm_handler, invoice_handler, echo
-from bot.config import BOT_TOKEN
+from bot.config import BOT_TOKEN, API_SERVER
 from bot.state import app_state
 
 from loguru import logger
+
+session = AiohttpSession(api=TelegramAPIServer.from_base(API_SERVER)) 
 
 dp = Dispatcher()
 
@@ -22,7 +26,7 @@ async def shutdown() -> None:
 
 async def main() -> None:
     await startup()
-    logger.info("Запуск бота..."); bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML)); logger.debug("Бот успешно запущен")
+    logger.info("Запуск бота..."); bot = Bot(token=BOT_TOKEN, session=session, default=DefaultBotProperties(parse_mode=ParseMode.HTML)); logger.debug("Бот успешно запущен")
 
     logger.info("Загрузка роутеров..."); 
     dp.include_router(user_commands.rt)

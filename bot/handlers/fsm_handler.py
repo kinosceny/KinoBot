@@ -223,13 +223,21 @@ async def search_film_handler(message: Message, state: FSMContext) -> None:
         return await message.answer(settings.not_found_code_message)
     
     if film.film_id in user.films:
+        await message.answer("Подождите... Идёт загрузка вашего видео")
         inputfile = FSInputFile(f"./bot/files/{film.path_to_video}")
         msg = (
             f"🎬 {html.bold(film.video_name)}\n\n"
             f"{html.bold('Название:')} {html.link(f"{film.film_name}", film.link_found)}\n\n"
             f"{html.bold('Где найти:')} {html.link(film.link_text, film.link)}"
         )
-        return await message.reply_video(video=inputfile, caption=msg, parse_mode="HTML", disable_web_page_preview=True, protect_content=True)
+        return await message.reply_video(
+            video=inputfile, 
+            caption=msg, 
+            parse_mode="HTML", 
+            disable_web_page_preview=True, 
+            protect_content=True,
+            supports_streaming=True,
+        )
     
     message_build = f"🎬 {html.bold(film.video_name)}\n\n{film.text}"
     photo = FSInputFile(f"./bot/files/{film.icon}")

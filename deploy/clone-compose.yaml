@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  clone-bot:
+    container_name: clone-bot
+    build:
+      context: ..
+      dockerfile: deploy/app/Dockerfile
+    volumes:
+      - "../bot:/app/bot"
+      - "/var/www/admin/data/www/tglibs.top/files:/app/bot/files"
+    env_file:
+      - .env
+    depends_on:
+      - telegram-bot-api
+    restart: always
+    networks:
+      - clone-internal
+
+  clone-database:
+    container_name: clone-postgres
+    image: postgres:14.17-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - clone_postgres_data:/var/lib/postgresql/data
+    networks:
+      - clone-internal
+  
+  clone-telegram-bot-api:
+    image: aiogram/telegram-bot-api:latest
+    env_file:
+      - .env
+    volumes:
+      - clone-telegram-bot-api-data:/var/lib/telegram-bot-api
+    networks:
+      - clone-internal
+
+volumes:
+  clone_postgres_data:
+    driver: local
+  clone-telegram-bot-api-data:
+    driver: local
+
+networks:
+  internal:
+    driver: bridge

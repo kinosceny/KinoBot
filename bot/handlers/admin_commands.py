@@ -48,7 +48,7 @@ async def create_film_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(createFilm.film_id)
 
 #Приветсвтие
-@rt.message(F.text.startswith("Приветсвие"))
+@rt.message(F.text.lower() == "приветствие")
 async def edit_name_handler(message: Message, state: FSMContext) -> None:
     if message.from_user.id not in ADMINS:
         return

@@ -45,5 +45,5 @@ volumes:
     driver: local
 
 networks:
-  internal:
+  clone-internal:
     driver: bridge

@@ -18,6 +18,7 @@ def admin_kb():
     kb_list = [
         [KeyboardButton(text="Приветствие"), KeyboardButton(text="Кнопки"), KeyboardButton(text="Остановить бота")],
         [KeyboardButton(text="Создать новый фильм"), KeyboardButton(text="Все фильмы"), KeyboardButton(text="Изменить цену фильма")],
+        [KeyboardButton(text="Изменить текст перед покупкой"), KeyboardButton(text="Изменить текст внизу после покупки")],
         [KeyboardButton(text="Назад")]
     ]
 

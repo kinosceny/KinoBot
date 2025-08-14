@@ -15,6 +15,10 @@ rt = Router()
 class NewValue(StatesGroup):
     value = State()
 
+class filmValue(StatesGroup):
+    film_id = State()
+    value = State()
+
 class createFilm(StatesGroup):
     film_id = State()
     video_name = State()
@@ -131,6 +135,27 @@ async def stop_bot(message: Message, state: FSMContext) -> None:
 
     await state.set_data({"value": "film_cost"})
     await state.set_state(NewValue.value)
+
+@rt.message(F.text.lower() == "изменить текст внизу после покупки")
+async def edit_text(message: Message, state: FSMContext) -> None:
+    if message.from_user.id not in ADMINS:
+        return
+    
+    await message.answer("Введите новое значение для 'after_link', это значение примениться ко всем фильмам (/cancel - для выхода):")
+
+    await state.set_data({"value": "after_link"})
+    await state.set_state(NewValue.value)
+
+@rt.message(F.text.lower() == "изменить текст перед покупкой")
+async def edit_text(message: Message, state: FSMContext) -> None:
+    if message.from_user.id not in ADMINS:
+        return
+    
+    await message.answer("Введите айди фильма:")
+
+    await state.update_data(key="text")
+    await state.set_state(filmValue.film_id)
+    
 
 @rt.message(Command(commands="delete_film"))
 async def delete_film(message: Message, command: CommandObject) -> None:

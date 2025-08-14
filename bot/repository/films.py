@@ -97,4 +97,17 @@ class FilmsRepository:
             val = await c.fetchval(sql, film_id)
 
         return val is not None
+    
+    async def update_by_film_id(self, film_id: int, key: str, value) -> bool:
+        sql = f"""
+            UPDATE films
+            SET {key} = $1
+            WHERE film_id = $2
+            RETURNING 1
+        """
+        
+        async with self._db.acquire() as c:
+            val = await c.fetchval(sql, value, film_id)
+
+        return bool(val)
 

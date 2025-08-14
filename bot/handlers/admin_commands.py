@@ -151,7 +151,7 @@ async def edit_text(message: Message, state: FSMContext) -> None:
     if message.from_user.id not in ADMINS:
         return
     
-    await message.answer("Введите айди фильма:")
+    await message.answer("Введите код фильма:")
 
     await state.update_data(key="text")
     await state.set_state(filmValue.film_id)

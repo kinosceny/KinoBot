@@ -11,7 +11,7 @@ from bot.keyboards.keyboards import admin_kb, main_kb, buy_kb
 from bot.config import ADMINS
 from bot.state import app_state
 from bot.repository.films import Film
-from bot.handlers.admin_commands import NewValue, createFilm
+from bot.handlers.admin_commands import NewValue, createFilm, filmValue
 
 rt = Router()
 
@@ -175,6 +175,39 @@ async def new_value_handler(message: Message, state: FSMContext) -> None:
     await message.answer(f"Значение '{message.text}' для '{data.get("value")}' успешно установлено", reply_markup=admin_kb())
     await state.clear()
 
+@rt.message(filmValue.film_id)
+async def filmid_handler(message: Message, state: FSMContext) -> None:
+    if not int(message.text):
+        await state.set_state(filmValue.film_id)
+        return await message.answer("Введите число:");
+    
+    data = await state.get_data()
+    film = await app_state.film_repo.find_by_film_id(int(message.text))
+    if film == None:
+        await message.answer("Данного фильма нет в базе данных, введите другой id: ")
+        await state.set_state(filmValue.film_id);return
+
+    await state.update_data(film_id=int(message.text))
+    await message.answer(f"Введите значение для '{data.get("key")}':")
+    await state.set_state(filmValue.value)
+
+@rt.message(filmValue.value)
+async def filmvalue_handler(message: Message, state: FSMContext) -> None:
+    if not str(message.text):
+        await state.set_state(filmValue.value)
+        return await message.answer("Введите текст:")
+    
+    await state.update_data(value=message.text)
+    data = await state.get_data()
+
+    result = await app_state.film_repo.update_by_film_id(data.get("film_id"), data.get("key"), data.get("value"))
+    if result:
+        await message.answer("Успешно обновил значение!")
+    elif not result:
+        await message.answer("Проверьте все значения")
+
+    await state.clear()
+    
 # Хэндлер поиска
 @rt.message(searchFilm.search)
 async def search_film_handler(message: Message, state: FSMContext) -> None:

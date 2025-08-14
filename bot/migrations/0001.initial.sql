@@ -20,7 +20,9 @@ create table films(
 
 create table bot_settings(
     "id" serial primary key,
-    "start_message" text not null default 'Добро пожаловать в бота! Для ввода кода нажмите на кнопку ниже 👇',
+    "start_message" text not null default 'Добро пожаловать в бота!
+    
+Введите код видео 👇',
     "code_message" text not null default 'Введите код ниже',
     "after_link" text not null default 'Данный фильм также доступен Вам в разделе «⭐️ Мои фильмы»',
     "not_found_code_message" text not null default 'Не найдено',

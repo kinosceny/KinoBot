@@ -26,6 +26,7 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: always
     networks:
       - internal
   
@@ -35,6 +36,7 @@ services:
       - .env
     volumes:
       - telegram-bot-api-data:/var/lib/telegram-bot-api
+    restart: always
     networks:
       - internal
 

@@ -11,7 +11,7 @@ from bot.keyboards.keyboards import admin_kb, main_kb, buy_kb
 from bot.config import ADMINS
 from bot.state import app_state
 from bot.repository.films import Film
-from bot.handlers.admin_commands import NewValue, createFilm, filmValue
+from bot.handlers.admin_commands import NewValue, createFilm, filmValue, giveFilm
 
 rt = Router()
 
@@ -243,3 +243,42 @@ async def search_film_handler(message: Message, state: FSMContext) -> None:
     photo = FSInputFile(f"./bot/files/{film.icon}")
 
     return await message.answer_photo(caption=message_build, reply_markup=buy_kb(f"Оплатить ⭐️ {settings.film_cost}", f"buy_film|{int(message.text)}"), photo=photo)
+
+@rt.message(giveFilm.film_id)
+async def givefilm_id(message: Message, state: FSMContext) -> None:
+    if not int(message.text):
+        await message.answer("Введите число!")
+        return await state.set_state(giveFilm.film_id)
+    
+    film = await app_state.film_repo.find_by_film_id(int(message.text))
+    if film == None:
+        await message.answer("Указанный вами фильм не найден. Укажите другой")
+        return await state.set_state(giveFilm.film_id)
+    
+    await state.update_data(film_id=int(message.text))
+
+    await message.answer("Введите ID пользователя")
+    return await state.set_state(giveFilm.user_id)
+
+@rt.message(giveFilm.user_id)
+async def givefilm_user_id(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+
+    if not int(message.text):
+        await message.answer("Введите число!")
+        return await state.set_state(giveFilm.user_id)
+    
+    user = await app_state.user_repo.get_by_telegram_id(telegram_id=int(message.text))
+    if user == None:
+        await message.answer("Указанный вами пользователь не найден. Укажите другой ID")
+        return await state.set_state(giveFilm.user_id)
+    
+    if data.get("film_id") in user.films:
+        await message.answer("Указанный вами фильм для этого пользователя уже есть в его списке")
+        return await state.clear()
+    
+    new_films = list(user.films) if user.films else []
+    new_films.append(data.get("film_id"))
+    await app_state.user_repo.update_by_id(message.from_user.id, "films", new_films)
+
+    await message.answer(f"Успешно добавил фильм пользователю {user.telegram_id} ")

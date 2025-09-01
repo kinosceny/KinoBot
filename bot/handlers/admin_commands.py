@@ -31,6 +31,10 @@ class createFilm(StatesGroup):
     pre_confirm = State()
     confirm = State()
 
+class giveFilm(StatesGroup):
+    film_id = State()
+    user_id = State()
+
 # Админ панель
 @rt.message(F.text.startswith("⚙️ Админ панель"))
 async def admin_panel_handler(message: Message) -> None:
@@ -171,3 +175,11 @@ async def delete_film(message: Message, command: CommandObject) -> None:
     
     await app_state.film_repo.delete_by_film_id(int(command.args))
     return await message.answer("Фильм успешно удален", reply_markup=admin_kb())
+
+@rt.message(F.text.lower() == "выдать фильм")
+async def give_film(message: Message, state: FSMContext):
+    if message.from_user.id not in ADMINS:
+        return
+    
+    await message.answer("Введите ID фильма")
+    return await state.set_state(giveFilm.film_id)

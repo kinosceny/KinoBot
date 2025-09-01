@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
@@ -15,7 +15,7 @@ jobs:
       - name: Connect, pull from repo and restart docker
         uses: appleboy/ssh-action@v1.0.3
         env:
-          REMOTE_DIR: '/opt/kinobot'
+          REMOTE_DIR: '/data/kinobot'
           GIT_CONNECT: 'git@github.com:degit-tech/kinobot.git'
         with:
           host: ${{ secrets.SERVER_HOST }}

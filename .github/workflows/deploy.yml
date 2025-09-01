@@ -29,3 +29,4 @@ jobs:
             cd $REMOTE_DIR && git pull origin main
             make dev-build && make dev-start \
             && make clone-dev-build && make clone-dev-start
+

@@ -20,11 +20,33 @@ jobs:
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          password: ${{ secrets.PASSWORD }}
           debug: true
           script_stop: true
           envs: REMOTE_DIR,GIT_CONNECT
           script: |
             if [ ! -d $REMOTE_DIR ]; then git clone $GIT_CONNECT $REMOTE_DIR; fi
             cd $REMOTE_DIR && git pull origin master
-            docker compose -f deploy/compose.yaml -p kinobot build --no-cache
+            make dev-build
+  deploy-clone:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Connect, pull from repo and restart docker
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          REMOTE_DIR: '/opt/kinobot-clone'
+          GIT_CONNECT: 'git@github.com:degit-tech/kinobot.git'
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.PASSWORD }}
+          debug: true
+          script_stop: true
+          envs: REMOTE_DIR,GIT_CONNECT
+          script: |
+            if [ ! -d $REMOTE_DIR ]; then git clone $GIT_CONNECT $REMOTE_DIR; fi
+            cd $REMOTE_DIR && git pull origin master
+            docker compose -f deploy/clone-compose.yaml -p kinobot-clone build --no-cache

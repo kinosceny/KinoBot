@@ -28,4 +28,4 @@ jobs:
             if [ ! -d $REMOTE_DIR ]; then git clone $GIT_CONNECT $REMOTE_DIR; fi
             cd $REMOTE_DIR && git pull origin master
             make dev-build
-            docker compose -f deploy/clone-compose.yaml -p kinobot-clone build --no-cache
+            make clone-dev-build

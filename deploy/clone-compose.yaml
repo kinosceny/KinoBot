@@ -10,7 +10,7 @@ services:
       - "../bot:/app/bot"
       - "/var/www/admin/data/www/tglibs.top/files:/app/bot/files"
     env_file:
-      - .env
+      - clone.env
     depends_on:
       - clone-telegram-bot-api
     restart: always
@@ -32,7 +32,7 @@ services:
   clone-telegram-bot-api:
     image: aiogram/telegram-bot-api:latest
     env_file:
-      - .env
+      - clone.env
     volumes:
       - clone-telegram-bot-api-data:/var/lib/telegram-bot-api
     networks:

@@ -27,5 +27,5 @@ jobs:
           script: |
             if [ ! -d $REMOTE_DIR ]; then git clone $GIT_CONNECT $REMOTE_DIR; fi
             cd $REMOTE_DIR && git pull origin master
-            make dev-build
-            make clone-dev-build
+            make dev-build && make dev-start \
+            && make clone-dev-build && make clone-dev-start

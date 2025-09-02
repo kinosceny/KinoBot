@@ -38,10 +38,28 @@ services:
     networks:
       - clone-internal
 
+  clone-pgadmin:
+    container_name: clone-pgadmin
+    image: dpage/pgadmin4:7
+    env_file:
+      - .env
+    ports:
+      - "5051:80"
+    depends_on:
+      - clone-database
+    volumes:
+      - clone-pgadmin-data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json
+    restart: always
+    networks:
+      - clone-internal
+
 volumes:
   clone_postgres_data:
     driver: local
   clone-telegram-bot-api-data:
+    driver: local
+  clone-pgadmin-data:
     driver: local
 
 networks:

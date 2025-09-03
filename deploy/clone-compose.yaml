@@ -49,7 +49,7 @@ services:
       - clone-database
     volumes:
       - clone-pgadmin-data:/var/lib/pgadmin
-      - ./servers.json:/pgadmin4/servers.json
+      - ./clone-servers.json:/pgadmin4/servers.json
     restart: always
     networks:
       - clone-internal

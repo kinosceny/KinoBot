@@ -59,6 +59,10 @@ async def user_films(message: Message) -> None:
 
     for id in user.films:
         film = await app_state.film_repo.find_by_film_id(id)
+
+        if not film:
+            continue
+
         inputfile = FSInputFile(f"./bot/files/{film.icon}")
         msg = (
             f"🎬 {html.link(html.bold(film.video_name), f"t.me/{bot.username}?start={film.film_id}")}"
